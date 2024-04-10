@@ -6,8 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const locals = {
-      title: "NodeJs Blog",
-      description: "Simple Blog created with NodeJs & MongoDb.",
+      title: "shantplace",
     };
 
     let perPage = 10;
