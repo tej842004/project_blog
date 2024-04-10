@@ -32,7 +32,7 @@ router.get("/login", async (req, res) => {
     const locals = {
       title: "login",
     };
-    res.render("admin/login", { locals, layout: adminLayout });
+    res.render("admin/login", { locals, layout: adminLayout, currenRoute: '/admin/login' });
   } catch (error) {
     console.log(error);
   }
