@@ -76,11 +76,17 @@ router.post("/search", async (req, res) => {
 });
 
 router.get("/about", (req, res) => {
-  res.render("about", { currentRoute: "/about" });
+  const locals = {
+    title: "shantplace/about",
+  };
+  res.render("about", { locals, currentRoute: "/about" });
 });
 
 router.get("/contact", (req, res) => {
-  res.render("contact", { currentRoute: "/contact" });
+  const locals = {
+    title: "shantplace/contact",
+  };
+  res.render("contact", { locals, currentRoute: "/contact" });
 });
 
 module.exports = router;
