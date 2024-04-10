@@ -6,6 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 const adminLayout = "../views/layouts/admin";
+const dashboardLayout = "../views/layouts/dashboard";
 const jwtSecret = process.env.JWT_SECRET;
 
 // Check Login
@@ -25,20 +26,32 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// GET HOME
-router.get("/admin", async (req, res) => {
+// GET login
+router.get("/login", async (req, res) => {
   try {
     const locals = {
-      title: "Admin",
+      title: "login",
     };
-    res.render("admin/index", { locals, layout: adminLayout });
+    res.render("admin/login", { locals, layout: adminLayout });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// GET register
+router.get("/register", async (req, res) => {
+  try {
+    const locals = {
+      title: "register",
+    };
+    res.render("admin/register", { locals, layout: adminLayout });
   } catch (error) {
     console.log(error);
   }
 });
 
 // POST Admin - Check Login
-router.post("/admin", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
@@ -72,7 +85,7 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     res.render("admin/dashboard", {
       data,
       locals,
-      layout: adminLayout,
+      layout: dashboardLayout,
     });
   } catch (error) {
     console.log(error);
@@ -89,7 +102,7 @@ router.get("/add-post", authMiddleware, async (req, res) => {
     res.render("admin/add-post", {
       data,
       locals,
-      layout: adminLayout,
+      layout: dashboardLayout,
     });
   } catch (error) {
     console.log(error);
@@ -139,7 +152,7 @@ router.get("/edit-post/:id", authMiddleware, async (req, res) => {
     res.render("admin/edit-post", {
       locals,
       data,
-      layout: adminLayout,
+      layout: dashboardLayout,
     });
   } catch (error) {
     console.log(error);
@@ -164,8 +177,10 @@ router.post("/register", async (req, res) => {
 
     try {
       const user = await User.create({ username, password: hashedPassword });
-      res.status(201).json({ message: "User created", user });
-    } catch (error) {}
+      res.redirect('/login')
+    } catch (error) {
+      console.log(error);
+    }
   } catch (error) {
     if (error.code === 11000) {
       res.status(409).json({ message: "User already in use" });
