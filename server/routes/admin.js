@@ -10,7 +10,7 @@ const dashboardLayout = "../views/layouts/dashboard";
 const jwtSecret = process.env.JWT_SECRET;
 
 // Check Login
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
@@ -19,8 +19,9 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
-    req.user = { _id: decoded.userId };
-    req.userId = decoded.userId;
+    const user = await User.findById(decoded.userId);
+    req.user = user.toObject();
+    req.user.isAdmin = user.isAdmin;
     next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized" });
@@ -179,7 +180,7 @@ router.delete("/delete-post/:id", authMiddleware, async (req, res) => {
 
     const post = await Post.findById(postId);
 
-    if (!post.author.equals(userId))
+    if (!post.author.equals(userId) && !req.user.isAdmin)
       return res.status(403).send("You are not authorized to delete this post");
 
     await Post.deleteOne({ _id: req.params.id });
