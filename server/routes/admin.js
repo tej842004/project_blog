@@ -218,3 +218,25 @@ router.get("/logout", (req, res) => {
   res.redirect("/");
   // res.json({ message: "Logout successful." });
 });
+
+
+router.get("/admin/post/:id", async (req, res) => {
+  try {
+    let slug = req.params.id;
+
+    const data = await Post.findById({ _id: slug });
+
+    const locals = {
+      title: data.title,
+    };
+
+    res.render("post", {
+      layout: dashboardLayout,
+      locals,
+      data,
+      currentRoute: `posts/${slug}`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
