@@ -19,6 +19,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
+    req.user = { _id: decoded.userId };
     req.userId = decoded.userId;
     next();
   } catch (error) {
@@ -32,7 +33,11 @@ router.get("/login", async (req, res) => {
     const locals = {
       title: "login",
     };
-    res.render("admin/login", { locals, layout: adminLayout, currenRoute: '/admin/login' });
+    res.render("admin/login", {
+      locals,
+      layout: adminLayout,
+      currenRoute: "/admin/login",
+    });
   } catch (error) {
     console.log(error);
   }
@@ -81,7 +86,8 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     const locals = {
       title: "Dashboard",
     };
-    const data = await Post.find();
+    const userId = req.user._id;
+    const data = await Post.find({ author: userId });
     res.render("admin/dashboard", {
       data,
       locals,
@@ -112,24 +118,30 @@ router.get("/add-post", authMiddleware, async (req, res) => {
 // POST Admin - Create New Post
 router.post("/add-post", authMiddleware, async (req, res) => {
   try {
-    try {
-      const newPost = new Post({
-        title: req.body.title,
-        body: req.body.body,
-      });
-      await Post.create(newPost);
-      res.redirect("/dashboard");
-    } catch (error) {
-      console.log(error);
-    }
+    const newPost = new Post({
+      title: req.body.title,
+      body: req.body.body,
+      author: req.user._id,
+    });
+    await newPost.save();
+    res.redirect("/dashboard");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 // PUT Admin - Update Post
 router.put("/edit-post/:id", authMiddleware, async (req, res) => {
   try {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+
+    if (!post.author.equals(userId))
+      return res.status(403).send("You are not authorized to edit this post");
+
     await Post.findByIdAndUpdate(req.params.id, {
       title: req.body.title,
       body: req.body.body,
@@ -162,6 +174,14 @@ router.get("/edit-post/:id", authMiddleware, async (req, res) => {
 // DELETE Admin - Delete Post
 router.delete("/delete-post/:id", authMiddleware, async (req, res) => {
   try {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+
+    if (!post.author.equals(userId))
+      return res.status(403).send("You are not authorized to delete this post");
+
     await Post.deleteOne({ _id: req.params.id });
     res.redirect("/dashboard");
   } catch (error) {
@@ -177,7 +197,7 @@ router.post("/register", async (req, res) => {
 
     try {
       const user = await User.create({ username, password: hashedPassword });
-      res.redirect('/login')
+      res.redirect("/login");
     } catch (error) {
       console.log(error);
     }
