@@ -2,6 +2,8 @@ const Post = require("../models/Post");
 const express = require("express");
 const router = express.Router();
 
+const dashboardLayout = "../views/layouts/dashboard";
+
 // GET - HOME
 router.get("/", async (req, res) => {
   try {
@@ -44,7 +46,7 @@ router.get("/post/:id", async (req, res) => {
       title: data.title,
     };
 
-    res.render("post", { locals, data, currentRoute: `posts/${slug}` });
+    res.render("post", { layout: dashboardLayout, locals, data, currentRoute: `posts/${slug}` });
   } catch (error) {
     console.log(error);
   }
