@@ -18,3 +18,14 @@
     </li>
     <% }) %>
 </ul>
+
+<div class="pagination">
+  <% if (nextPage !==null) { %>
+    <a href="/dashboard?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
+    <% } %>
+      <% if (current>= 2) { %>
+        <div>
+          <a href="/dashboard?page=<%= current - 1 %>" class="pagination">View Latest Post &gt;</a>
+        </div>
+        <% } %>
+</div>

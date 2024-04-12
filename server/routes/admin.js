@@ -87,12 +87,27 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     const locals = {
       title: "Dashboard",
     };
+
     const userId = req.user._id;
-    const data = await Post.find({ author: userId });
+
+    let perPage = 5;
+    let page = req.query.page || 1;
+
+    const data = await Post.find({ author: userId })
+      .sort({ createdAt: -1 })
+      .skip(perPage * page - perPage)
+      .limit(perPage);
+
+    const count = await Post.countDocuments({ author: userId });
+    const nextPage = parseInt(page) + 1;
+    const hasNextPage = nextPage <= Math.ceil(count / perPage);
+
     res.render("admin/dashboard", {
       data,
       locals,
       layout: dashboardLayout,
+      current: page,
+      nextPage: hasNextPage ? nextPage : null,
     });
   } catch (error) {
     console.log(error);
