@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
       title: "shantplace",
     };
 
-    let perPage = 10;
+    let perPage = 5;
     let page = req.query.page || 1;
 
     const data = await Post.aggregate([{ $sort: { createdAt: -1 } }])
@@ -46,7 +46,12 @@ router.get("/post/:id", async (req, res) => {
       title: data.title,
     };
 
-    res.render("post", { layout: adminLayout, locals, data, currentRoute: `posts/${slug}` });
+    res.render("post", {
+      layout: adminLayout,
+      locals,
+      data,
+      currentRoute: `posts/${slug}`,
+    });
   } catch (error) {
     console.log(error);
   }
