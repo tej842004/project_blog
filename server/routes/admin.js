@@ -219,7 +219,6 @@ router.get("/logout", (req, res) => {
   // res.json({ message: "Logout successful." });
 });
 
-
 router.get("/admin/post/:id", async (req, res) => {
   try {
     let slug = req.params.id;
@@ -239,4 +238,30 @@ router.get("/admin/post/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+router.get("/admin/about", (req, res) => {
+  const locals = {
+    title: "admin/about",
+  };
+  res.render("about", {
+    layout: dashboardLayout,
+    locals,
+    currentRoute: "/about",
+  });
+});
+
+router.get("/admin/contact", (req, res) => {
+  const locals = {
+    title: "admin/contact",
+  };
+  res.render("contact", {
+    layout: dashboardLayout,
+    locals,
+    currentRoute: "/contact",
+  });
+});
+
+router.get("/admin", (req, res) => {
+  res.redirect("/dashboard");
 });
