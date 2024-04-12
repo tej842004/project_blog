@@ -18,6 +18,9 @@
           <span class="article-list__date">
             <%= post.createdAt.toDateString() %>
           </span>
+          <span class="article-list__date">
+            Written by <%= post.author.username %>
+          </span>
         </a>
       </li>
       <% }) %>

@@ -14,10 +14,20 @@ router.get("/", async (req, res) => {
     let perPage = 5;
     let page = req.query.page || 1;
 
-    const data = await Post.aggregate([{ $sort: { createdAt: -1 } }])
-      .skip(perPage * page - perPage)
-      .limit(perPage)
-      .exec();
+    const data = await Post.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      { $unwind: "$author" },
+      { $skip: perPage * page - perPage },
+      { $limit: perPage },
+    ]).exec();
 
     const count = await Post.countDocuments();
     const nextPage = parseInt(page) + 1;
