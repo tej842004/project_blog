@@ -93,6 +93,8 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     let perPage = 5;
     let page = req.query.page || 1;
 
+    const user = await User.find({ _id: userId });
+
     const data = await Post.find({ author: userId })
       .sort({ createdAt: -1 })
       .skip(perPage * page - perPage)
@@ -103,6 +105,7 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
     const hasNextPage = nextPage <= Math.ceil(count / perPage);
 
     res.render("admin/dashboard", {
+      user,
       data,
       locals,
       layout: dashboardLayout,
@@ -253,22 +256,32 @@ router.get("/admin/post/:id", async (req, res) => {
   }
 });
 
-router.get("/admin/about", (req, res) => {
+router.get("/admin/about", authMiddleware, async (req, res) => {
   const locals = {
     title: "admin/about",
   };
+
+  const userId = req.user._id;
+  const user = await User.find({ _id: userId });
+
   res.render("about", {
+    user,
     layout: dashboardLayout,
     locals,
     currentRoute: "/about",
   });
 });
 
-router.get("/admin/contact", (req, res) => {
+router.get("/admin/contact", authMiddleware, async (req, res) => {
   const locals = {
     title: "admin/contact",
   };
+
+  const userId = req.user._id;
+  const user = await User.find({ _id: userId });
+
   res.render("contact", {
+    user,
     layout: dashboardLayout,
     locals,
     currentRoute: "/contact",
