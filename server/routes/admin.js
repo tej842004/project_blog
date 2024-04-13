@@ -225,8 +225,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // GET Admin - Logout
 router.get("/logout", (req, res) => {
   res.clearCookie("token");
@@ -280,3 +278,5 @@ router.get("/admin/contact", (req, res) => {
 router.get("/admin", (req, res) => {
   res.redirect("/dashboard");
 });
+
+module.exports = router;
