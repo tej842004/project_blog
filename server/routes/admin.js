@@ -123,8 +123,11 @@ router.get("/add-post", authMiddleware, async (req, res) => {
     const locals = {
       title: "Add Post",
     };
+    const userId = req.user._id;
+    const user = await User.find({ _id: userId });
     const data = await Post.find();
     res.render("admin/add-post", {
+      user,
       data,
       locals,
       layout: dashboardLayout,
@@ -179,8 +182,11 @@ router.get("/edit-post/:id", authMiddleware, async (req, res) => {
     const locals = {
       title: "Edit Post",
     };
+    const userId = req.user._id;
+    const user = await User.find({ _id: userId });
     const data = await Post.findOne({ _id: req.params.id });
     res.render("admin/edit-post", {
+      user,
       locals,
       data,
       layout: dashboardLayout,
